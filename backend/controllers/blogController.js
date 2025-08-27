@@ -6,7 +6,7 @@ const User = require("../models/User");
 // @access  Private
 const createBlog = async (req, res) => {
     try {
-        const { title, subtitle, author, date, content } = req.body;
+        const { title, subtitle, content, image, images } = req.body;
 
         if (!title || !content) {
             return res.status(400).json({ error: "Title and content are required" });
@@ -15,9 +15,11 @@ const createBlog = async (req, res) => {
         const blog = new Blog({
             title,
             subtitle,
-            author,
-            date: date || new Date(),
+            author: req.user.name || "Unknown", // from auth
+            date: new Date(),  // always server time
             content,
+            image: image || "",         // single image (cover)
+            images: images || [],       // multiple images if passed
             user: req.user.id,
         });
 
@@ -32,6 +34,7 @@ const createBlog = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // @desc    Get all blogs (homepage)
 // @route   GET /api/blogs
@@ -65,10 +68,27 @@ const getMyBlogs = async (req, res) => {
 const getBlogById = async (req, res) => {
     try {
         const { id } = req.params;
-        const blog = await Blog.findById(id).populate("user", "username email");
+
+        let blog = await Blog.findById(id).populate("user", "username email");
 
         if (!blog) {
             return res.status(404).json({ error: "Blog not found" });
+        }
+
+        if (req.user) {
+            // ✅ Logged in user → only one view per user
+            const alreadyViewed = blog.views.some(
+                (v) => v.user?.toString() === req.user.id
+            );
+
+            if (!alreadyViewed) {
+                blog.views.push({ user: req.user.id });
+                await blog.save();
+            }
+        } else {
+            // ✅ Guest user → always count as new view
+            blog.views.push({ user: null });
+            await blog.save();
         }
 
         res.json(blog);
@@ -79,6 +99,9 @@ const getBlogById = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+
+
 
 // @desc    Delete blog
 // @route   DELETE /api/blogs/:id

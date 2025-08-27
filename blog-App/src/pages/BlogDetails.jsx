@@ -76,19 +76,22 @@ const BlogDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      {/* Blog Image (if exists) */}
-      {blog.image && (
-        <img
-          src={blog.image}
-          alt={blog.title}
-          className="w-full rounded-lg mb-6"
-        />
-      )}
+     
 
       <h1 className="text-3xl font-bold mb-2">{blog.title}</h1>
       <p className="text-gray-500 mb-4">
         By {blog.author} • {new Date(blog.date).toDateString()}
       </p>
+
+      {/* Blog Image (if exists) */}
+      {blog.image && (
+        <img
+          src={blog.image}
+          alt={blog.title}
+          className="w-full h-80 object-cover rounded-lg mb-6"
+        />
+      )}
+
 
       <div className="text-lg leading-relaxed text-gray-700 prose max-w-none">
         {typeof blog.content === "string"

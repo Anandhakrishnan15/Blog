@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Eye, Heart } from "lucide-react";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 export const Home = () => {
@@ -10,6 +10,8 @@ export const Home = () => {
     const [sort, setSort] = useState("Newest");
     const [blogs, setBlogs] = useState([]); // fetched blogs
     const [loading, setLoading] = useState(true);
+    // console.log(blogs);
+    
 
     // Fetch blogs from API
     useEffect(() => {
@@ -51,7 +53,7 @@ export const Home = () => {
                     Welcome to MyBlog
                 </h1>
                 {user && (
-                    <p className="text-xl mb-2">Hello, {user.username} 👋</p>
+                    <p className="text-xl mb-2">Hello, {user.name} 👋</p>
                 )}
                 <p className="text-lg md:text-xl">
                     Discover articles, tutorials, and insights from top writers.
@@ -129,7 +131,8 @@ export const Home = () => {
                                                 {new Date(blog.createdAt).toLocaleDateString()}
                                             </span>
                                             <button className="flex items-center gap-1 text-red-500 hover:text-red-600">
-                                                <Heart size={18} /> {blog.likes || 0}
+                                                <Eye size={18} /> {Math.floor((blog.views?.length || 0) / 2)}
+
                                             </button>
                                         </div>
                                     </div>

@@ -13,6 +13,9 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() => localStorage.getItem("token"));
     const [loading, setLoading] = useState(true);
 
+    console.log(user);
+    
+
     // Whenever token changes → fetch user
     useEffect(() => {
         const fetchUser = async () => {
